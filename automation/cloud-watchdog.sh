@@ -46,13 +46,14 @@ sync_infra_repo() {
   local repo="/home/chrizhuu/claude-infra"
   [ -d "$repo/.git" ] || return 0
 
+  # Run git as chrizhuu (service runs as root, git safe.directory blocks cross-user ops)
   local before after
-  before=$(git -C "$repo" rev-parse HEAD 2>/dev/null)
-  git -C "$repo" pull --ff-only --quiet 2>/dev/null || {
+  before=$(sudo -u chrizhuu git -C "$repo" rev-parse HEAD 2>/dev/null) || return 0
+  sudo -u chrizhuu git -C "$repo" pull --ff-only --quiet 2>/dev/null || {
     log "WARN" "claude-infra git pull failed"
-    return
+    return 0
   }
-  after=$(git -C "$repo" rev-parse HEAD 2>/dev/null)
+  after=$(sudo -u chrizhuu git -C "$repo" rev-parse HEAD 2>/dev/null) || return 0
 
   if [ "$before" != "$after" ]; then
     log "INFO" "claude-infra updated: ${before:0:7} → ${after:0:7}"
