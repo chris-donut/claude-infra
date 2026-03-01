@@ -1,0 +1,11 @@
+{
+  "github_repos": [
+    "hummingbot/hummingbot",
+    "anthropics/claude-code",
+    "modelcontextprotocol/modelcontextprotocol",
+    "jup-ag/jupiter",
+    "drift-labs/protocol-v2"
+  ],
+  "competitors_api_url": "http://localhost:3000/api/competitors",
+  "telegram_chat_id": "${TELEGRAM_CHAT_ID}"
+}

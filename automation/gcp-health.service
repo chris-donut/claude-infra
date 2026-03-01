@@ -1,0 +1,29 @@
+[Unit]
+Description=Donut GCP Health Daemon
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=chrizhuu
+ExecStart=/home/chrizhuu/donut-product-dev/scripts/automation/gcp-health-daemon.sh --interval 1800
+Restart=always
+RestartSec=30
+
+# Environment
+Environment=HOME=/home/chrizhuu
+Environment=OPENCLAW_HOME=/home/chrizhuu/.openclaw
+Environment=OPENCLAW_CONTAINER=openclaw-openclaw-gateway-1
+Environment=ALERT_METHOD=log
+
+# Resource limits
+MemoryMax=128M
+CPUQuota=10%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=donut-health
+
+[Install]
+WantedBy=multi-user.target

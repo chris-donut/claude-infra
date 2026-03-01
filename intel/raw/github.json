@@ -1,0 +1,60 @@
+[
+  {
+    "repo": "hummingbot/hummingbot",
+    "stars": 17463,
+    "latestRelease": {
+      "tag": "v2.12.0",
+      "date": "2026-01-26"
+    },
+    "recentIssues": [
+      "feat/connector: Add GRVT CLOB Perpetual Connector (V2.1 Gateway)",
+      "(fix) scope derivative completion and lock v2 start options",
+      "fix(ui): correct Avellaneda prompt option autofill parsing"
+    ]
+  },
+  {
+    "repo": "anthropics/claude-code",
+    "stars": 69918,
+    "latestRelease": {
+      "tag": "v2.1.56",
+      "date": "2026-02-25"
+    },
+    "recentIssues": [
+      "Feature request: configurable auto-compaction rules",
+      "MCP: `disabled: true` does not prevent HTTP connection attempts at startup",
+      "Read permission with absolute path doesn't match when tool displays tilde path"
+    ]
+  },
+  {
+    "repo": "modelcontextprotocol/modelcontextprotocol",
+    "stars": 7292,
+    "latestRelease": {
+      "tag": "2025-11-25",
+      "date": "2025-11-25"
+    },
+    "recentIssues": [
+      "Add Swift SDK Tier 3 assessment to SDK listing",
+      "Swift SDK — Tier 3 Assessment",
+      "Add C# SDK Tier 1 assessment to SDK listing"
+    ]
+  },
+  {
+    "repo": "jup-ag/jupiter",
+    "stars": 0,
+    "latestRelease": null,
+    "recentIssues": []
+  },
+  {
+    "repo": "drift-labs/protocol-v2",
+    "stars": 381,
+    "latestRelease": {
+      "tag": "v2.157.0",
+      "date": "2026-02-11"
+    },
+    "recentIssues": [
+      "program: withdraw from if vaults",
+      "lukas/be 125 implement changes needed for pyth pro api price payload",
+      "Security Audit: Fix oracle staleness bypass, div-by-zero, and deserialization panics"
+    ]
+  }
+]

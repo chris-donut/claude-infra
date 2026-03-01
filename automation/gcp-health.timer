@@ -1,0 +1,12 @@
+[Unit]
+Description=Donut GCP Health Check Timer
+Requires=gcp-health.service
+
+[Timer]
+# Run every 30 minutes
+OnBootSec=60
+OnUnitActiveSec=1800
+AccuracySec=60
+
+[Install]
+WantedBy=timers.target
