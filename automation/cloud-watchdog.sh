@@ -40,7 +40,26 @@ action() {
   "$@"
 }
 
-# ─── Tailscale Health ────────────────────────────────────────
+# ─── Infra Repo Sync ─────────────────────────────────────
+
+sync_infra_repo() {
+  local repo="/home/chrizhuu/claude-infra"
+  [ -d "$repo/.git" ] || return 0
+
+  local before after
+  before=$(git -C "$repo" rev-parse HEAD 2>/dev/null)
+  git -C "$repo" pull --ff-only --quiet 2>/dev/null || {
+    log "WARN" "claude-infra git pull failed"
+    return
+  }
+  after=$(git -C "$repo" rev-parse HEAD 2>/dev/null)
+
+  if [ "$before" != "$after" ]; then
+    log "INFO" "claude-infra updated: ${before:0:7} → ${after:0:7}"
+  fi
+}
+
+# ─── Tailscale Health ────────────────────────────────────
 
 check_tailscale() {
   log "INFO" "Checking Tailscale..."
@@ -91,7 +110,7 @@ except:
   fi
 }
 
-# ─── Task API Health ─────────────────────────────────────────
+# ─── Task API Health ─────────────────────────────────────
 
 check_task_api() {
   log "INFO" "Checking task-api..."
@@ -118,7 +137,7 @@ check_task_api() {
   fi
 }
 
-# ─── Tmux Services Health ────────────────────────────────────
+# ─── Tmux Services Health ────────────────────────────────
 
 check_tmux_services() {
   log "INFO" "Checking tmux services..."
@@ -164,7 +183,7 @@ check_tmux_services() {
   fi
 }
 
-# ─── Resource Health ─────────────────────────────────────────
+# ─── Resource Health ─────────────────────────────────────
 
 check_resources() {
   log "INFO" "Checking resources..."
@@ -190,10 +209,11 @@ check_resources() {
   fi
 }
 
-# ─── Main ────────────────────────────────────────────────────
+# ─── Main ────────────────────────────────────────────────
 
 main() {
   log "INFO" "═══ Watchdog check started ═══"
+  sync_infra_repo
   check_tailscale
   check_task_api
   check_tmux_services
