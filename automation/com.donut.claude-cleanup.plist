@@ -7,7 +7,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/chrizhuu/Desktop/Donut/Donut Codebase/donut-product-dev/scripts/automation/claude-cleanup.sh</string>
+        <string>/Users/chrizhuu/Desktop/Donut/Personal/claude-infra/automation/claude-cleanup.sh</string>
         <string>--quiet</string>
     </array>
     <key>StartInterval</key>

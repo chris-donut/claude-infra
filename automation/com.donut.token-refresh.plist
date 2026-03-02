@@ -9,7 +9,7 @@
     <array>
         <string>/bin/zsh</string>
         <string>-c</string>
-        <string>$HOME/Desktop/Donut/Donut Codebase/donut-product-dev/scripts/automation/token-refresh.sh --check</string>
+        <string>$HOME/Desktop/Donut/Personal/claude-infra/automation/token-refresh.sh --check</string>
     </array>
 
     <key>StartInterval</key>

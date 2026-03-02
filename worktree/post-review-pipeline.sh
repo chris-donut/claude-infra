@@ -15,7 +15,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SHARED_DIR="$REPO_ROOT/.worktree-shared"
 STATE_DIR="$REPO_ROOT/state"
 SKILLS_DIR="${SKILLS_DIR:-$REPO_ROOT/donut-product/skills}"

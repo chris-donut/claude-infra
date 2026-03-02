@@ -2,8 +2,15 @@
 # Deploy OpenClaw <-> Claude Code integration on GCP VM
 # Run this script ON the GCP VM (openclaw-gateway)
 #
+# TODO [2026-03-01]: Paths in this script still reference old structure:
+#   - REPO_DIR uses "donut-product-dev" (should match GCP VM actual clone path)
+#   - Container mount paths use "/workspace/donut-product-dev"
+#   - task-queue.sh fallback paths use "/home/chrizhuu/donut-product-dev"
+#   - SOUL.md references use "/workspace/donut-product-dev"
+#   Keep GCP VM paths as-is for now; update when re-deploying.
+#
 # What it does:
-#   Phase 1: Clones donut-product-dev repo, mounts into container, updates SOUL.md
+#   Phase 1: Clones donut-product repo, mounts into container, updates SOUL.md
 #   Phase 2: Adds GitHub MCP server to openclaw.json
 #   Phase 3: Adds bidirectional task dispatch (OpenClaw -> task-queue)
 #   Sets up cron for auto-sync

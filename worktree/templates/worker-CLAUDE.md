@@ -13,24 +13,24 @@ You are one of multiple parallel Claude Code workers. Follow these rules strictl
 ### 1. Claiming Tasks
 Before starting work, claim a task from the shared queue:
 ```bash
-bash {{MAIN_REPO}}/scripts/worktree/task-queue.sh claim {{WORKER_ID}}
+bash {{MAIN_REPO}}/worktree/task-queue.sh claim {{WORKER_ID}}
 ```
 This atomically assigns the next pending task to you. Read the returned task JSON for your assignment.
 
 ### 2. Completing Tasks
 When done with a task:
 ```bash
-bash {{MAIN_REPO}}/scripts/worktree/task-queue.sh complete <task_id> --worker {{WORKER_ID}} --result "success"
+bash {{MAIN_REPO}}/worktree/task-queue.sh complete <task_id> --worker {{WORKER_ID}} --result "success"
 ```
 If the task failed:
 ```bash
-bash {{MAIN_REPO}}/scripts/worktree/task-queue.sh complete <task_id> --worker {{WORKER_ID}} --result "failed" --reason "description of failure"
+bash {{MAIN_REPO}}/worktree/task-queue.sh complete <task_id> --worker {{WORKER_ID}} --result "failed" --reason "description of failure"
 ```
 
 ### 3. Checking Queue Status
 ```bash
-bash {{MAIN_REPO}}/scripts/worktree/task-queue.sh list
-bash {{MAIN_REPO}}/scripts/worktree/task-queue.sh status
+bash {{MAIN_REPO}}/worktree/task-queue.sh list
+bash {{MAIN_REPO}}/worktree/task-queue.sh status
 ```
 
 ## Progress Reporting

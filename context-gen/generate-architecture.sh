@@ -14,7 +14,7 @@ cat > "$OUTPUT" << EOF
 # Architecture Context
 Generated: $TIMESTAMP
 
-## Project: donut-product-dev
+## Project: donut-product
 Location: $REPO_ROOT
 
 ## Sub-Applications

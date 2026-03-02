@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 LOG_FILE="${LOG_FILE:-/tmp/donut-token-refresh.log}"
 PID_FILE="/tmp/donut-token-refresh.pid"
 

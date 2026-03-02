@@ -14,7 +14,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SHARED_DIR="${WORKTREE_SHARED_DIR:-$REPO_ROOT/.worktree-shared}"
 GATE_DIR="$SHARED_DIR/gate-results"
 TASKS_FILE="$SHARED_DIR/dev-tasks.json"

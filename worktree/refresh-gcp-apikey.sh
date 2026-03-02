@@ -3,7 +3,7 @@
 # Run LOCALLY (from your Mac). Safe to run multiple times.
 #
 # Usage:
-#   bash scripts/worktree/refresh-gcp-apikey.sh
+#   bash worktree/refresh-gcp-apikey.sh
 #
 # Add to macOS launchd alongside token-refresh.sh for periodic sync:
 #   Suggested interval: every 6 hours (matches session lifetime)

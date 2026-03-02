@@ -3,13 +3,13 @@
 # Run LOCALLY (from your Mac) to configure the GCP VM for OAuth-free worker execution.
 #
 # Usage:
-#   bash scripts/worktree/setup-gcp-apikey.sh
-#   ANTHROPIC_API_KEY=sk-ant-... bash scripts/worktree/setup-gcp-apikey.sh
+#   bash worktree/setup-gcp-apikey.sh
+#   ANTHROPIC_API_KEY=sk-ant-... bash worktree/setup-gcp-apikey.sh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 GCP_ZONE="${GCP_ZONE:-us-central1-a}"
 GCP_INSTANCE="${GCP_INSTANCE:-claude-code-server}"
@@ -141,6 +141,6 @@ echo ""
 echo "API key injected. Workers on $GCP_INSTANCE will use ANTHROPIC_API_KEY instead of OAuth."
 echo ""
 echo "Next steps:"
-echo "  - Run workers as normal: bash scripts/worktree/launch-worker.sh <N>"
-echo "  - To refresh the key later: bash scripts/worktree/refresh-gcp-apikey.sh"
+echo "  - Run workers as normal: bash worktree/launch-worker.sh <N>"
+echo "  - To refresh the key later: bash worktree/refresh-gcp-apikey.sh"
 echo "  - To add periodic refresh (recommended): add refresh-gcp-apikey.sh to macOS launchd"

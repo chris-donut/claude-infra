@@ -38,7 +38,7 @@ class Config:
 
     def __init__(self, args: argparse.Namespace):
         self.script_dir = str(Path(__file__).resolve().parent)
-        self.repo_root = str(Path(self.script_dir).parent.parent)
+        self.repo_root = str(Path(self.script_dir).parent)
         self.shared_dir = os.path.join(self.repo_root, '.worktree-shared')
         self.worktree_root = os.path.join(self.repo_root, '.worktrees')
         self.config_file = os.path.join(self.shared_dir, 'worktree.config.json')

@@ -5,7 +5,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SHARED_DIR="$REPO_ROOT/.worktree-shared"
 WORKTREE_ROOT="$REPO_ROOT/.worktrees"
 
@@ -78,7 +78,7 @@ if ! _preflight_api_key; then
   echo "  On GCP workers, OAuth tokens expire in ~12 hours and kill long-running sessions."
   echo "  Fix: run the following from your LOCAL Mac:"
   echo ""
-  echo "    bash scripts/worktree/setup-gcp-apikey.sh"
+  echo "    bash worktree/setup-gcp-apikey.sh"
   echo ""
   echo "  Continuing anyway — if you have a valid OAuth session this may still work."
   echo ""
@@ -118,7 +118,7 @@ if [ -z "$PROMPT" ] && [ "$AUTO_CLAIM" = true ]; then
   fi
 
   PROMPT="$PROMPT\n\nIMPORTANT: Do NOT claim additional tasks from the task queue. Only work on this single task."
-  PROMPT="$PROMPT\nWhen done, commit your changes and then run:\nbash $REPO_ROOT/scripts/worktree/task-queue.sh complete $task_id --worker $WORKER_ID --result success"
+  PROMPT="$PROMPT\nWhen done, commit your changes and then run:\nbash $REPO_ROOT/worktree/task-queue.sh complete $task_id --worker $WORKER_ID --result success"
 
   echo "Claimed task: $task_id — $task_title"
 fi
@@ -141,7 +141,7 @@ fi
 # Final check — warn but don't abort (OAuth may still be valid locally)
 if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
   echo "WARNING: No ANTHROPIC_API_KEY found. Worker may fail with OAuth errors."
-  echo "Run: bash scripts/worktree/setup-gcp-apikey.sh"
+  echo "Run: bash worktree/setup-gcp-apikey.sh"
 fi
 
 # ─────────────────────────────────────────────────────────────

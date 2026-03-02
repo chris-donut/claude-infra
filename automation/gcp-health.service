@@ -6,6 +6,8 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=chrizhuu
+# TODO [2026-03-01]: Path below is stale. On GCP VM, script lives at ~/claude-infra/automation/
+# Update to /home/chrizhuu/claude-infra/automation/gcp-health-daemon.sh when re-deploying.
 ExecStart=/home/chrizhuu/donut-product-dev/scripts/automation/gcp-health-daemon.sh --interval 1800
 Restart=always
 RestartSec=30
