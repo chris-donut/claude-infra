@@ -146,6 +146,72 @@ fi
 
 # ─────────────────────────────────────────────────────────────
 
+# ─── Skills dir injection (pattern from Paperclip) ──────────
+# Build a temp directory with .claude/skills/ containing symlinks to core
+# skills, then pass via --add-dir so Claude discovers them natively.
+# This closes Gap 1 (Skill Asymmetry: 27 skills → 0 skills).
+
+SKILLS_DIR=""
+_build_skills_dir() {
+  local tmp
+  tmp="$(mktemp -d "${TMPDIR:-/tmp}/worker-skills-XXXXXX")"
+  local target="$tmp/.claude/skills"
+  mkdir -p "$target"
+
+  # Source 1: repo-local skills (if worktree project has .claude/skills/)
+  if [ -d "$WORKER_DIR/.claude/skills" ]; then
+    for skill in "$WORKER_DIR/.claude/skills"/*/; do
+      [ -d "$skill" ] || continue
+      local name
+      name="$(basename "$skill")"
+      ln -sf "$skill" "$target/$name" 2>/dev/null || true
+    done
+  fi
+
+  # Source 2: user's global skills (~/.claude/skills/)
+  local global_skills="$HOME/.claude/skills"
+  if [ -d "$global_skills" ]; then
+    for skill in "$global_skills"/*/; do
+      [ -d "$skill" ] || continue
+      local name
+      name="$(basename "$skill")"
+      # Don't override repo-local skills
+      [ -L "$target/$name" ] || [ -d "$target/$name" ] && continue
+      ln -sf "$skill" "$target/$name" 2>/dev/null || true
+    done
+  fi
+
+  # Count injected skills
+  local count=0
+  [ -d "$target" ] && count="$(find "$target" -maxdepth 1 -mindepth 1 -type l 2>/dev/null | wc -l | tr -d ' ')"
+
+  if [ "$count" -gt 0 ]; then
+    SKILLS_DIR="$tmp"
+    echo "Skills injected: $count skills via --add-dir"
+  else
+    rm -rf "$tmp"
+  fi
+}
+
+_build_skills_dir
+
+# ─── Session resume (pattern from Paperclip) ────────────────
+# If a previous session exists for this task, resume it instead of starting
+# fresh. This closes Gap 2 (Context Disparity: 6 files → 0).
+
+RESUME_SESSION_ID=""
+if [ -n "${task_id:-}" ]; then
+  SESSION_STORE="$SHARED_DIR/sessions"
+  if [ -f "$SESSION_STORE/${task_id}.session" ]; then
+    RESUME_SESSION_ID="$(cat "$SESSION_STORE/${task_id}.session" 2>/dev/null || true)"
+    if [ -n "$RESUME_SESSION_ID" ]; then
+      echo "Resuming session: $RESUME_SESSION_ID (from previous run of $task_id)"
+    fi
+  fi
+fi
+
+# ─────────────────────────────────────────────────────────────
+
 # Set worker environment
 export WORKER_ID="$WORKER_ID"
 export WORKER_NUM="$WORKER_NUM"
@@ -159,6 +225,8 @@ echo "  Worker:    $WORKER_ID"
 echo "  Directory: $WORKER_DIR"
 echo "  Port:      $PORT"
 echo "  Max turns: $MAX_TURNS"
+[ -n "$SKILLS_DIR" ] && echo "  Skills:    $SKILLS_DIR"
+[ -n "$RESUME_SESSION_ID" ] && echo "  Resume:    $RESUME_SESSION_ID"
 if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
   echo "  Auth:      ANTHROPIC_API_KEY (${ANTHROPIC_API_KEY:0:16}...)"
 else
@@ -171,6 +239,11 @@ SESSION_DIR="$WORKER_DIR/data"
 mkdir -p "$SESSION_DIR"
 SESSION_FILE="$SESSION_DIR/session-$(date +%s).json"
 
+# Build extra CLI args for skills and session resume
+EXTRA_ARGS=()
+[ -n "$SKILLS_DIR" ] && EXTRA_ARGS+=(--add-dir "$SKILLS_DIR")
+[ -n "$RESUME_SESSION_ID" ] && EXTRA_ARGS+=(--resume "$RESUME_SESSION_ID")
+
 # Launch Claude Code
 cd "$WORKER_DIR"
 
@@ -178,11 +251,13 @@ if [ -n "$PROMPT" ]; then
   claude \
     --dangerously-skip-permissions \
     --output-format stream-json --verbose \
+    --max-turns "$MAX_TURNS" \
+    "${EXTRA_ARGS[@]}" \
     -p "$(echo -e "$PROMPT")" \
     2>&1 | tee "$SESSION_FILE"
   EXIT_CODE=${PIPESTATUS[0]}
 else
-  # Interactive mode
+  # Interactive mode (no stream-json, no resume, no skills)
   claude \
     --dangerously-skip-permissions
   EXIT_CODE=$?
@@ -190,4 +265,36 @@ fi
 
 echo ""
 echo "=== Worker $WORKER_ID finished (exit: $EXIT_CODE) ==="
-[ -f "$SESSION_FILE" ] && echo "Session saved: $SESSION_FILE"
+
+# ─── Post-run: parse session for cost + session persistence ──
+# Pattern from Paperclip: extract cost/usage/session_id from stream-json
+# output, save for cost tracking and future session resume.
+
+if [ -f "$SESSION_FILE" ] && [ -s "$SESSION_FILE" ]; then
+  echo "Session saved: $SESSION_FILE"
+
+  PARSE_ARGS=(
+    "$SESSION_FILE"
+    --save-cost "$SHARED_DIR/costs"
+    --save-session "$SHARED_DIR/sessions"
+  )
+  [ -n "${task_id:-}" ] && PARSE_ARGS+=(--task-id "$task_id")
+  PARSE_ARGS+=(--worker-id "$WORKER_ID")
+
+  PARSED="$(bash "$SCRIPT_DIR/parse-session.sh" "${PARSE_ARGS[@]}" 2>/dev/null)" || true
+
+  if [ -n "$PARSED" ]; then
+    cost="$(echo "$PARSED" | jq -r '.cost_usd // 0')"
+    in_tok="$(echo "$PARSED" | jq -r '.usage.input_tokens // 0')"
+    out_tok="$(echo "$PARSED" | jq -r '.usage.output_tokens // 0')"
+    cached="$(echo "$PARSED" | jq -r '.usage.cached_tokens // 0')"
+    sid="$(echo "$PARSED" | jq -r '.session_id // empty')"
+    echo ""
+    echo "  Cost:    \$$cost"
+    echo "  Tokens:  ${in_tok} in (${cached} cached) / ${out_tok} out"
+    [ -n "$sid" ] && echo "  Session: $sid (saved for resume)"
+  fi
+fi
+
+# Clean up temp skills dir
+[ -n "$SKILLS_DIR" ] && rm -rf "$SKILLS_DIR" 2>/dev/null || true
